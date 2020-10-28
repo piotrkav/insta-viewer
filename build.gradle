@@ -1,0 +1,81 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id "org.openapi.generator" version "5.0.0-beta"
+
+}
+
+group = 'io.github.piotrkav'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+
+
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    compile group: 'io.swagger', name: 'swagger-annotations', version: '1.6.2'
+
+    compile group: 'io.swagger.core.v3', name: 'swagger-annotations', version: '2.1.4'
+    compile group: 'io.gsonfire', name: 'gson-fire', version: '1.8.4'
+
+    compile group: 'com.github.igor-suhorukov', name: 'instagramscraper', version: '2.2'
+
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
+    implementation "org.glassfish.jaxb:jaxb-runtime:2.3.2"
+
+    compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+
+
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    library = "spring-boot"
+    inputSpec = "$rootDir/insta-viewer-spec.yaml".toString()
+    outputDir = "$buildDir/generated".toString()
+    apiPackage = "io.github.piotrkav.instaviewer.api"
+    modelPackage = "io.github.piotrkav.instaviewer.model"
+    generateApiDocumentation = true
+    generateApiTests = false
+    generateModelTests = false
+//    skipIfSpecIsUnchanged = false
+//    useBeanValidation = true
+    configOptions = [
+            dateLibrary         : "java8",
+            interfaceOnly       : "true",
+            delegatePattern     : "false",
+            skipDefaultInterface: "true",
+            useTags             : "true"
+    ]
+
+}
+
+compileJava {
+    source "$buildDir/generated"
+}
+
+
+test {
+    useJUnitPlatform()
+}
